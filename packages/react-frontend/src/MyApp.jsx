@@ -8,7 +8,14 @@ function MyApp() {
   
 	function updateList(person) {
 		postUser(person)
-    .then(() => setCharacters([...characters, person]))
+    .then((res) => {
+      if (res.status === 201){
+        return res.json();
+      }else{
+        throw new Error(`Received code ${res.status}`);
+      }
+  })
+  .then((json) => setCharacters([...characters, json]))
     .catch((error) => {
       console.log(error);
     })
