@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 
 function Form(props) {
+  //Use empty strings for initial text boxes
 	const [person, setPerson] = useState({
 		name: "",
 		job: ""
 	});
 
+  //
 	function handleChange(event) {
+    //Handles change to data (text)
 		const { name,value } = event.target;
 		if (name === "job")
 			setPerson({ name: person["name"], job: value });
@@ -14,10 +17,12 @@ function Form(props) {
 	}
 
 	function submitForm() {
+    //When button is clicked handle it and set person back to empty
 		props.handleSubmit(person);
 		setPerson({ name: "", job: "" });
 	}
 
+  //Return format for form
 	return (
   <form>
     <label htmlFor="name">Name</label>
