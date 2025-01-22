@@ -4,8 +4,10 @@ function div (a, b){
   
 function containsNumbers(text){
 for (let i = 0; i < text.length; i++) {
-    if (!isNaN(text.charAt(i)))
-    return true;
+    //Have to check to make sure it is not a space and it is a number
+    if (text.charAt(i) !== " " && !isNaN(text.charAt(i))){
+        return true;
+    }
 }
 return false;
 }
