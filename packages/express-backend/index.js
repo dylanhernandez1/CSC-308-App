@@ -17,7 +17,7 @@ app.post("/users", (req, res) => {
 	const userToAdd = req.body;
 
 	let result = userServices.addUser(userToAdd);
-	result.then(() => res.status(201).send(userToAdd))
+	result.then((result) => res.status(201).send(result))
 	.catch((error) => res.status(500).send(`Internal Server Error: ${error}`));
 });
 

@@ -33,7 +33,7 @@ function MyApp() {
 
 	function removeOneCharacter(index) {
     //Make promise to backend to remove character if found
-    let id = characters[index].id;
+    let id = characters[index]._id;
     fetch(`http://localhost:8000/users/${id}`, {
       method: "DELETE"})
       .then((res) => {
