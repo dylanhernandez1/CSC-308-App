@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema(
       },
     },
   },
-  { collection: "users_list" }
+  { collection: "users_list", versionkey: false }
 );
 
 const User = mongoose.model("User", UserSchema);

@@ -15,9 +15,10 @@ app.use(express.json());
 app.post("/users", (req, res) => {
 	//Handle post request (adding a user)
 	const userToAdd = req.body;
-	userToAdd["id"] = `${Math.random()}`; //Make id a string for consistency
-	userServices.addUser(userToAdd);
-	res.status(201).send(userToAdd);
+
+	let result = userServices.addUser(userToAdd);
+	result.then(() => res.status(201).send(userToAdd))
+	.catch((error) => res.status(500).send(`Internal Server Error: ${error}`));
 });
 
 app.get("/", (req, res) => {
@@ -28,26 +29,32 @@ app.get("/", (req, res) => {
 app.get("/users/:id", (req, res) => {
 	//Get user by id logic
 	const id = req.params["id"];
+
 	let result = userServices.findUserById(id);
-	if (result === undefined) {
-		res.status(404).send("Resource not found.");
-	}else {
-		userServices.deleteUser(result);
-		res.send(result);
-	}
+	result.then((result) => {
+		if (!result || result === undefined){
+			res.status(404).send("Resource not found.");
+		}else {
+			res.send(result);
+		}
+	})
+	.catch((error) => res.status(500).send(`Internal Server Error: ${error}`));
 });
 
 app.delete("/users/:id", (req, res) => {
 	//Delete user by id logic
 	const id = req.params["id"];
 	let result = userServices.findUserById(id);
-	if (result === undefined) {
-		res.status(404).send("Resource not found.");
-	}else {
+	result.then((result) => {
+		if (!result || result === undefined) {
+			return res.status(404).send("Resource not found.");
+		}
 		//Delete user here
-		userServices.deleteUser(result);
-		res.status(204).send();
-	}
+		return userServices.deleteUserById(id).then(() => { res.status(204).send(); })
+		.catch((error) => res.status(500).send(`Internal Server Error: ${error}`));
+		}
+	)
+	.catch((error) => res.status(500).send(`Internal Server Error: ${error}`));
 });
 
 app.get("/users", (req, res) => {
@@ -55,23 +62,24 @@ app.get("/users", (req, res) => {
 	const name = req.query.name;
 	const job = req.query.job;
 	let result;
-	if (name != undefined && job != undefined){
-		result = userServices.findUserByIdAndJob(name, job);
-		//result = { user_list: result };
-		res.send(result);
+	if (name !== undefined && job !== undefined){
+		result = userServices.findUserByNameAndJob(name, job);
 	}else if (name != undefined) {
 		result = userServices.findUserByName(name);
-		//result = { users_list: result };
-		res.send(result);
 	}else if (job != undefined) {
 		result = userServices.findUserByJob(job);
-		//result = { users_list: result };
-		res.send(result);
 	}else {
 		result = userServices.getUsers();
-		result.then((result) => res.send({users_list: result}))
-		.catch((error) => res.status(500).send("Internal Server Error"));
 	}
+		
+	result.then((result) => {
+		if (result === undefined) {
+			res.status(404).send("Resource not found.");
+		}else {
+			res.send({users_list: result})
+		}
+	})
+	.catch((error) => res.status(500).send(`Internal Server Error: ${error}`));
 });
 
 app.listen(port, () => {
